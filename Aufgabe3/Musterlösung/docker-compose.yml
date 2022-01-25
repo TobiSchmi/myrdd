@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+  #Name des Containers
+  app:
+    #Name des Images
+    image: node:12-alpine
+    #Befehl, der beim Start im Container ausgeführt werden soll
+    command: sh -c "yarn install && yarn run dev"
+    #Ports, die für den Host zugänglich sein werden
+    ports:
+      - 3000:3000
+    #Das Arbeitsverzeichnis, in dem der Befehl ausgeführt werden soll
+    working_dir: /app
+    #Volumes und Pfade auf dem Host, die den Pfaden im Container zugeordnet sind
+    volumes:
+      - ./app:/app
+    #Eingebundene Umgebungsvariablen hier: MYSQL Connection
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+  mysql:
+    image: mysql:5.7
+    volumes: 
+      - todo-mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+#######Musterlösung##########
+  phpmyadmin:
+    image: phpmyadmin
+    depends_on:
+      - mysql
+    ports:
+      - 3001:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=secret
+#######Musterlösung##########
+
+#Volumes, die von mehreren Diensten gemeinsam genutzt werden
+volumes:
+  todo-mysql-data:
